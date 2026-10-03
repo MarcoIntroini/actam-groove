@@ -57,7 +57,7 @@ def closed_hat(duration=0.06, tau=0.010, amplitude=0.15, sample_rate=SR):
     return edge_fade(vca(source, shape), sample_rate=sample_rate)
 
 
-def open_hat(duration=0.30, tau=0.070, amplitude=0.15, sample_rate=SR):
+def open_hat(duration=0.30, tau=0.050, amplitude=0.1, sample_rate=SR):
     source = noise(duration, amplitude=amplitude, sample_rate=sample_rate)
     shape = envelope_exp(duration, tau=tau, sample_rate=sample_rate)
     return edge_fade(vca(source, shape), sample_rate=sample_rate)
@@ -95,12 +95,12 @@ def mix(a, b, ga=1.0, gb=1.0):
 
 
 def snare(
-    duration=0.20, amplitude=0.15, noise_gain=0.5,
+    duration=1.20, amplitude=0.15, noise_gain=0.5,
     sample_rate=SR,
 ):
     pitch = [
-        180 + 120 * value
-        for value in envelope_exp(duration, tau=0.010, sample_rate=sample_rate)
+        100 + 80 * value
+        for value in envelope_exp(duration, tau=1.010, sample_rate=sample_rate)
     ]
     body = vca(
         square_wave_f(pitch, amplitude=amplitude, sample_rate=sample_rate),
@@ -115,6 +115,47 @@ def snare(
         sample_rate=sample_rate,
     )
 
+def snare_mid(
+    duration=1.20, amplitude=0.15, noise_gain=0.5,
+    sample_rate=SR,
+):
+    pitch = [
+        140 + 100 * value
+        for value in envelope_exp(duration, tau=0.310, sample_rate=sample_rate)
+    ]
+    body = vca(
+        square_wave_f(pitch, amplitude=amplitude, sample_rate=sample_rate),
+        envelope_exp(duration, tau=0.025, sample_rate=sample_rate),
+    )
+    wires = vca(
+        noise(duration, amplitude=amplitude, sample_rate=sample_rate),
+        envelope_exp(duration, tau=0.055, sample_rate=sample_rate),
+    )
+    return edge_fade(
+        mix(body, wires, ga=1.0, gb=noise_gain),
+        sample_rate=sample_rate,
+    )
+
+def snare_deep(
+    duration = 0.20, amplitude = 0.08, noise_gain = 0.2,
+    sample_rate = SR
+):
+    pitch = [
+        112.5 + 337.5 * value
+        for value in envelope_exp(duration, tau = 0.01, sample_rate = sample_rate)
+    ]
+    body = vca(
+        square_wave_f(pitch, amplitude = amplitude, sample_rate = sample_rate),
+        envelope_exp(duration, tau = 0.155, sample_rate = sample_rate)
+    )
+    wires = vca(
+        noise(duration, amplitude=amplitude, sample_rate=sample_rate),
+        envelope_exp(duration, tau=0.635, sample_rate=sample_rate),
+    )
+    return edge_fade(
+        mix(body, wires, ga = 1.0, gb = noise_gain),
+        sample_rate = sample_rate
+    )
 
 def fit(wave, n_samples):
     padding = max(0, n_samples - len(wave))
